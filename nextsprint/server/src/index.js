@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import projectRoutes from './routes/projects.js';
@@ -30,7 +31,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong' });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`NextSprint API running on http://localhost:${PORT}`);
-});
+// Only start listening when run directly (not imported by tests)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`NextSprint API running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
