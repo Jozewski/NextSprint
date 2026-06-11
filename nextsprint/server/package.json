@@ -9,10 +9,12 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "seed": "node src/seed.js",
+
+
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
-    "test": "vitest run"
+
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
