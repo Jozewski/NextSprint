@@ -31,9 +31,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong' });
 });
 
-// Only start listening when run directly (not imported by tests)
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
+if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`NextSprint API running on http://localhost:${PORT}`);
   });

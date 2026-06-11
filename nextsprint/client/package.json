@@ -28,4 +28,10 @@
     "vite": "^6.3.5",
     "vitest": "^4.1.8"
   }
+  },
+  "description": "",
+  "main": "vite.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
