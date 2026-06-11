@@ -9,6 +9,9 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "seed": "node src/seed.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
     "test": "vitest run"
   },
   "dependencies": {
@@ -19,6 +22,7 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@vitest/ui": "^4.1.8",
     "supertest": "^7.2.2",
     "vitest": "^4.1.8"
   }
