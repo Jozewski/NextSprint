@@ -13,17 +13,40 @@ const COLUMNS = [
   { id: 'complete', label: 'Complete' },
 ];
 
-// Category colors are the differentiator vs a generic Trello clone
+// // Original category styles
+// const CATEGORY_STYLES = {
+//   coursework: 'bg-sky-100 text-sky-700',
+//   career: 'bg-amber-100 text-amber-700',
+//   mentorship: 'bg-violet-100 text-violet-700',
+// };
+
+// // Original priority styles
+// const PRIORITY_STYLES = {
+//   low: 'bg-slate-100 text-slate-600',
+//   medium: 'bg-blue-100 text-blue-700',
+//   high: 'bg-red-100 text-red-700',
+// };
+
+// Next Chapter Project theme — navy + warm orange + amber
 const CATEGORY_STYLES = {
-  coursework: 'bg-sky-100 text-sky-700',
-  career: 'bg-amber-100 text-amber-700',
-  mentorship: 'bg-violet-100 text-violet-700',
+  coursework: 'bg-sky-50 text-sky-700 border border-sky-200',
+  career:     'bg-orange-100 text-orange-700 border border-orange-200',
+  mentorship: 'bg-amber-100 text-amber-700 border border-amber-200',
 };
 
 const PRIORITY_STYLES = {
-  low: 'bg-slate-100 text-slate-600',
-  medium: 'bg-blue-100 text-blue-700',
-  high: 'bg-red-100 text-red-700',
+  low:    'bg-slate-100 text-slate-500',
+  medium: 'bg-blue-50 text-blue-600',
+  high:   'bg-red-50 text-red-600',
+};
+
+// Colored top-border per column shows progress at a glance
+const COLUMN_ACCENT = {
+  backlog:       'border-t-4 border-t-slate-400',
+  todo:          'border-t-4 border-t-sky-400',
+  'in-progress': 'border-t-4 border-t-orange-500',
+  review:        'border-t-4 border-t-amber-400',
+  complete:      'border-t-4 border-t-emerald-500',
 };
 
 export default function Board() {
@@ -112,12 +135,13 @@ export default function Board() {
           <p className="mt-1 text-sm text-slate-500">Drag tasks between columns</p>
         </div>
         <div className="flex items-center gap-3">
+          {/* className="rounded-md border border-slate-300 px-3 py-2 text-sm" — original select style */}
           <select
             value={projectFilter}
             onChange={(e) =>
               setSearchParams(e.target.value ? { projectId: e.target.value } : {})
             }
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-md border border-orange-200 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-400"
           >
             <option value="">All projects</option>
             {projects.map((p) => (
@@ -129,16 +153,17 @@ export default function Board() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-md border border-orange-200 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-400"
           >
             <option value="">All categories</option>
             <option value="coursework">Coursework</option>
             <option value="career">Career</option>
             <option value="mentorship">Mentorship</option>
           </select>
+          {/* className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" — original button */}
           <button
             onClick={() => setModalTask({})}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 shadow-sm"
           >
             New task
           </button>
@@ -151,31 +176,37 @@ export default function Board() {
         <div className="mt-6 grid min-w-[900px] grid-cols-5 gap-4">
           {COLUMNS.map((column) => {
             const columnTasks = visibleTasks.filter((t) => t.status === column.id);
+            // Original column: rounded-xl bg-slate-100 p-3
             return (
-              <div key={column.id} className="rounded-xl bg-slate-100 p-3">
-                <h2 className="flex items-center justify-between px-1 text-sm font-semibold text-slate-700">
+              <div key={column.id} className={`rounded-xl bg-orange-50 p-3 border border-orange-100 ${COLUMN_ACCENT[column.id]}`}>
+                {/* Original header: text-slate-700 / count: text-slate-400 */}
+                <h2 className="flex items-center justify-between px-1 text-sm font-semibold text-slate-800">
                   {column.label}
-                  <span className="text-xs font-normal text-slate-400">{columnTasks.length}</span>
+                  <span className="rounded-full bg-orange-200 px-2 py-0.5 text-xs font-medium text-orange-700">{columnTasks.length}</span>
                 </h2>
                 <Droppable droppableId={column.id}>
                   {(provided, snapshot) => (
+                    // Original drag-over: bg-indigo-50
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={`mt-2 min-h-[120px] space-y-2 rounded-lg p-1 transition-colors ${
-                        snapshot.isDraggingOver ? 'bg-indigo-50' : ''
+                        snapshot.isDraggingOver ? 'bg-orange-100' : ''
                       }`}
                     >
                       {columnTasks.map((task, index) => (
                         <Draggable key={task.id} draggableId={String(task.id)} index={index}>
                           {(provided, snapshot) => (
+                            // Original card: hover:shadow, ring-indigo-400
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               onClick={() => setModalTask(task)}
-                              className={`cursor-pointer rounded-lg bg-white p-3 shadow-sm transition-shadow hover:shadow ${
-                                snapshot.isDragging ? 'shadow-lg ring-2 ring-indigo-400' : ''
+                              className={`cursor-pointer rounded-lg bg-white p-3 shadow-md transition-all duration-150 hover:shadow-lg ${
+                                snapshot.isDragging
+                                  ? 'shadow-2xl ring-2 ring-orange-400 rotate-2 scale-105 opacity-95'
+                                  : ''
                               }`}
                             >
                               <p className="text-sm font-medium text-slate-800">{task.title}</p>
