@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
 
-function StatCard({ label, value, accent = 'text-slate-900' }) {
+function StatCard({ label, value, accent = 'text-slate-900', border = 'border-slate-200' }) {
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm">
+    <div className={`rounded-xl bg-white p-5 shadow-md border-2 ${border}`}>
       <p className="text-sm text-slate-500">{label}</p>
       <p className={`mt-1 text-3xl font-bold ${accent}`}>{value}</p>
     </div>
@@ -58,15 +58,15 @@ export default function Dashboard() {
       <p className="mt-1 text-sm text-slate-500">Everything in one place</p>
 
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Due today" value={stats.tasksDueToday} accent="text-red-600" />
-        <StatCard label="Tasks remaining" value={stats.tasksRemaining} />
-        <StatCard label="Active projects" value={stats.projectsActive} />
-        <StatCard label="Current module" value={stats.currentModule} accent="text-indigo-600" />
+        <StatCard label="Due today" value={stats.tasksDueToday} accent="text-red-600" border="border-teal-400" />
+        <StatCard label="Tasks remaining" value={stats.tasksRemaining} border="border-blue-300" />
+        <StatCard label="Active projects" value={stats.projectsActive} border="border-green-400" />
+        <StatCard label="Current module" value={stats.currentModule} accent="text-indigo-600" border="border-yellow-400" />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* Weekly progress */}
-        <div className="rounded-xl bg-white p-6 shadow-sm">
+        <div className="rounded-xl bg-white p-6 shadow-md border-2 border-gray-300">
           <h2 className="font-semibold text-slate-900">Progress</h2>
           <p className="mt-1 text-sm text-slate-500">
             {stats.tasksCompleted} of {total} tasks complete · {stats.weeklyCompleted} finished this week
