@@ -60,9 +60,8 @@ describe('Login page - OTP Flow', () => {
     await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
     await waitFor(() => screen.getByPlaceholderText('123-456'));
 
-    // Enter code and submit
+    // Enter code (auto-submits)
     await userEvent.type(screen.getByPlaceholderText('123-456'), '147-546');
-    await userEvent.click(screen.getByRole('button', { name: /verify code/i }));
 
     await waitFor(() => {
       expect(mockVerifyOTP).toHaveBeenCalledWith('user@test.com', '147-546');

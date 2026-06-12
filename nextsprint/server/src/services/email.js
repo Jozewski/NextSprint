@@ -1,18 +1,20 @@
 import { Resend } from 'resend';
 
-// Initialize the Resend client only if API key is present
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
 export async function sendOTP(email, code) {
+  const apiKey = process.env.RESEND_API_KEY;
   const fromAddress = process.env.RESEND_FROM || 'onboarding@resend.dev';
 
-  if (!resend) {
+  // Fallback if API key is not set
+  if (!apiKey) {
     console.log(`\n-----------------------------------------`);
     console.log(`[EMAIL] Your NextSprint verification code is: ${code}`);
     console.log(`Sent to: ${email} (Fallback: RESEND_API_KEY not configured)`);
     console.log(`-----------------------------------------\n`);
     return;
   }
+
+  // Initialize Resend dynamically to avoid ES module import ordering issues with dotenv
+  const resend = new Resend(apiKey);
 
   try {
     const response = await resend.emails.send({
