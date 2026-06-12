@@ -1,97 +1,208 @@
 # NextSprint
 
-A project and career management platform built for coding bootcamp students. Combines coursework, career, and mentorship task tracking in one dashboard with a drag-and-drop Kanban board.
+NextSprint is a coursework progress tracker for a coding cohort. It combines student accounts, coursework projects, task boards, and dashboard stats so the demo can show realistic progress across the current curriculum.
 
-**Stack:** React + Tailwind v4 (Vite) · Node/Express · SQLite via node:sqlite (built into Node — zero native dependencies) · JWT auth
+The current demo data reflects the cohort at Week 7, Day 5: `TDD Team Build (Day 2 of 2): Vibe Code Friday`.
 
-```
+**Stack:** React + Tailwind v4 + Vite, Node/Express, SQLite via `node:sqlite`, JWT auth.
+
+```text
 nextsprint/
-├── server/   Express API + SQLite
-└── client/   React frontend
+|-- server/   Express API + SQLite
+`-- client/   React frontend
 ```
+
+## Current Demo Data
+
+Run `npm run seed` from `server/` to create the current cohort data.
+
+The seed creates:
+
+- 11 cohort users
+- 44 projects
+- 286 coursework tasks
+- Password for every seeded user: `testing`
+
+The seeded projects are coursework-only:
+
+- `Weeks 1-3 Phase 1 Foundations`
+- `Weeks 4-5 Phase 2 Data and React`
+- `Week 6 Next.js and Persistence`
+- `Week 7 TDD and AI Build`
+
+The tasks use real course material from Weeks 1-7, including:
+
+- Phase 1 orientation, prompting, HTML/CSS, JavaScript, debugging, and competency gate work
+- Phase 2 design thinking, APIs, databases, SQL, Node.js, React, Next.js, Postgres, Prisma, and API routes
+- Week 7 TDD, CLI sessions, UPDATE/DELETE, third-party APIs, OpenAI API, and team build work
+
+Student progress is intentionally varied for the demo. Different users have different tasks in `backlog`, `todo`, `in-progress`, `review`, and `complete`. Week 7 Day 5 appears across multiple statuses so each account shows a distinct board.
+
+Example login:
+
+```text
+actonitwithhelp@live.com / testing
+```
+
+Any seeded email in `server/src/seed.js` can log in with `testing`.
 
 ## Quick Start
 
-### 1. Backend
+### Backend
+
 ```bash
 cd server
 npm install
-cp .env.example .env        # then set JWT_SECRET to a long random string
-npm run seed                # creates demo data
-npm run dev                 # http://localhost:4000
+cp .env.example .env
+npm run seed
+npm run dev
 ```
 
-Generate a JWT secret:
+The API runs at:
+
+```text
+http://localhost:4000
+```
+
+Generate a JWT secret for `.env`:
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
-### 2. Frontend (new terminal)
+Required backend environment variables:
+
+```text
+JWT_SECRET=replace-with-a-long-random-secret
+CLIENT_ORIGIN=http://localhost:5173
+```
+
+Optional:
+
+```text
+DB_PATH=./nextsprint.db
+PORT=4000
+```
+
+### Frontend
+
 ```bash
 cd client
 npm install
-cp .env.example .env        # default points at localhost:4000
-npm run dev                 # http://localhost:5173
+cp .env.example .env
+npm run dev
 ```
 
-### 3. Log in with demo data
+The frontend runs at:
+
+```text
+http://localhost:5173
 ```
-demo@nextsprint.dev / password123
+
+The client defaults to `http://localhost:4000` for API calls. Set `VITE_API_URL` if the API is hosted somewhere else.
+
+## Favicon
+
+The app uses a PNG favicon at:
+
+```text
+client/public/favicon.png
 ```
 
-No database setup needed — SQLite is built into Node itself (`node:sqlite`), and `server/nextsprint.db` is created automatically on first run. **Requires Node 22.5+** (check with `node -v`). On Node 22 you may see an "experimental" warning at startup — it is safe to ignore; the module is stable in Node 23.4+.
+`client/index.html` references it with:
 
-## Team Ownership
+```html
+<link rel="icon" type="image/png" href="/favicon.png" />
+```
 
-| Developer | Backend | Frontend |
-|---|---|---|
-| Dev 1 — Auth | `routes/auth.js`, `routes/users.js`, `middleware/auth.js` | `Login.jsx`, `Register.jsx`, `Profile.jsx`, `AuthContext.jsx` |
-| Dev 2 — Projects | `routes/projects.js` | `Projects.jsx` |
-| Dev 3 — Tasks | `routes/tasks.js` | `Board.jsx`, `TaskModal.jsx` |
-| Dev 4 — Dashboard | `routes/stats.js`, `seed.js`, deployment | `Dashboard.jsx`, `Layout.jsx`, global polish |
+## Database
+
+SQLite is created automatically on first run. No manual migration step is required.
+
+Default local DB path:
+
+```text
+server/nextsprint.db
+```
+
+The app requires Node `22.5+` because it uses the built-in `node:sqlite` module.
 
 ## API Reference
 
-All protected routes require `Authorization: Bearer <token>`.
+All protected routes require:
+
+```text
+Authorization: Bearer <token>
+```
 
 | Method | Endpoint | Body / Query | Returns |
 |---|---|---|---|
-| POST | `/api/auth/register` | `{name, email, password}` | `{token, user}` |
-| POST | `/api/auth/login` | `{email, password}` | `{token, user}` |
-| GET | `/api/users/me` | — | `{user}` |
-| PUT | `/api/users/me` | profile fields | `{user}` |
-| GET | `/api/projects` | — | `{projects}` |
-| POST | `/api/projects` | `{title, description}` | `{project}` |
-| PUT | `/api/projects/:id` | fields | `{project}` |
-| DELETE | `/api/projects/:id` | — | `{ok: true}` |
-| GET | `/api/tasks` | `?projectId=&status=` | `{tasks}` |
-| POST | `/api/tasks` | task fields | `{task}` |
-| PUT | `/api/tasks/:id` | changed fields | `{task}` |
-| DELETE | `/api/tasks/:id` | — | `{ok: true}` |
-| GET | `/api/stats` | — | stats object |
+| GET | `/api/health` | none | `{ ok, db }` |
+| POST | `/api/auth/register` | `{ name, email, password }` | `{ token, user }` |
+| POST | `/api/auth/login` | `{ email, password }` | `{ token, user }` |
+| GET | `/api/users/me` | none | `{ user }` |
+| PUT | `/api/users/me` | profile fields | `{ user }` |
+| GET | `/api/projects` | none | `{ projects }` |
+| POST | `/api/projects` | `{ title, description }` | `{ project }` |
+| PUT | `/api/projects/:id` | project fields | `{ project }` |
+| DELETE | `/api/projects/:id` | none | `{ ok: true }` |
+| GET | `/api/tasks` | `?projectId=&status=` | `{ tasks }` |
+| POST | `/api/tasks` | task fields | `{ task }` |
+| PUT | `/api/tasks/:id` | task fields | `{ task }` |
+| DELETE | `/api/tasks/:id` | none | `{ ok: true }` |
+| GET | `/api/stats` | none | dashboard stats |
 
-Task fields: `title`, `description`, `status` (backlog/todo/in-progress/review/complete), `priority` (low/medium/high), `category` (coursework/career/mentorship), `dueDate` (YYYY-MM-DD), `projectId`.
+Task fields:
 
-## Deployment
+```text
+title
+description
+status: backlog | todo | in-progress | review | complete
+priority: low | medium | high
+category: coursework | career | mentorship
+dueDate: YYYY-MM-DD
+projectId
+```
 
-### Frontend → Vercel
+The current seed uses `coursework` tasks only.
+
+## Tests
+
+Backend:
+
+```bash
+cd server
+npm test
+```
+
+Client:
+
+```bash
+cd client
+npm test
+```
+
+Additional useful checks:
+
+```bash
+cd server
+node --check src/seed.js
+npm run seed
+```
+
+## Deployment Notes
+
+### Frontend on Vercel
+
 - Root directory: `client`
 - Framework preset: Vite
-- Env var: `VITE_API_URL` = your Render API URL (no trailing slash)
+- Environment variable: `VITE_API_URL=<backend API URL>`
 
-### Backend → Render
+### Backend on Render
+
 - Root directory: `server`
-- Build: `npm install` · Start: `npm start`
-- Env vars: `JWT_SECRET`, `CLIENT_ORIGIN` (your Vercel URL), `DB_PATH`
+- Build command: `npm install`
+- Start command: `npm start`
+- Environment variables: `JWT_SECRET`, `CLIENT_ORIGIN`, optional `DB_PATH`
 
-**⚠️ Important — SQLite on Render:** Render's filesystem is ephemeral, so the database file is **wiped on every deploy/restart** unless you attach a persistent disk:
-1. In the Render service, add a Disk (e.g., 1 GB) mounted at `/var/data`
-2. Set `DB_PATH=/var/data/nextsprint.db`
-3. Note: persistent disks require a paid Render instance. **Free-tier fallback for the hackathon:** accept that data resets on deploy, and run `npm run seed` from the Render shell (or add seeding to the start script) so the demo always has data. For a 2-day demo this is totally fine.
-
-## Hackathon Rules of Engagement
-1. Frontend never waits on backend — the API contract above is the source of truth
-2. Merge to main every 2–3 hours
-3. Feature freeze at Day 2 midday; bugs only after that
-4. Seed data before the demo — an empty board demos terribly
-5. Dev 4 owns deployment so it's one person's job, not everyone's panic
+SQLite on Render needs a persistent disk if data must survive deploys/restarts. Without one, rerun `npm run seed` after deploy/restart to restore demo data.
