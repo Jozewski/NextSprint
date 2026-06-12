@@ -21,30 +21,12 @@ The seed creates:
 - 11 cohort users
 - 44 projects
 - 286 coursework tasks
-- Password for every seeded user: `testing`
-
-The seeded projects are coursework-only:
-
-- `Weeks 1-3 Phase 1 Foundations`
-- `Weeks 4-5 Phase 2 Data and React`
-- `Week 6 Next.js and Persistence`
-- `Week 7 TDD and AI Build`
-
-The tasks use real course material from Weeks 1-7, including:
-
-- Phase 1 orientation, prompting, HTML/CSS, JavaScript, debugging, and competency gate work
-- Phase 2 design thinking, APIs, databases, SQL, Node.js, React, Next.js, Postgres, Prisma, and API routes
-- Week 7 TDD, CLI sessions, UPDATE/DELETE, third-party APIs, OpenAI API, and team build work
-
-Student progress is intentionally varied for the demo. Different users have different tasks in `backlog`, `todo`, `in-progress`, `review`, and `complete`. Week 7 Day 5 appears across multiple statuses so each account shows a distinct board.
+- Accounts are registered under passwordless OTP authentication (no passwords).
 
 Example login:
 
-```text
-actonitwithhelp@live.com / testing
-```
-
-Any seeded email in `server/src/seed.js` can log in with `testing`.
+* Email: `actonitwithhelp@live.com` (or any seeded email in `server/src/seed.js`).
+* Enter the email, click **Send Verification Code**, and retrieve the generated 6-digit code from the server console output to authenticate.
 
 ## Quick Start
 
@@ -138,8 +120,8 @@ Authorization: Bearer <token>
 | Method | Endpoint | Body / Query | Returns |
 |---|---|---|---|
 | GET | `/api/health` | none | `{ ok, db }` |
-| POST | `/api/auth/register` | `{ name, email, password }` | `{ token, user }` |
-| POST | `/api/auth/login` | `{ email, password }` | `{ token, user }` |
+| POST | `/api/auth/otp/send` | `{ email }` | `{ ok: true }` |
+| POST | `/api/auth/otp/verify` | `{ email, code }` | `{ token, user }` |
 | GET | `/api/users/me` | none | `{ user }` |
 | PUT | `/api/users/me` | profile fields | `{ user }` |
 | GET | `/api/projects` | none | `{ projects }` |

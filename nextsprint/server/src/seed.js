@@ -1,12 +1,10 @@
 // Development/demo data.
 // Run with: npm run seed
-// Login afterwards with any seeded email and password: testing
+// Login afterwards using the passwordless OTP email flow.
 import 'dotenv/config';
-import bcrypt from 'bcryptjs';
 import db from './db.js';
 
-const PASSWORD = 'testing';
-const passwordHash = bcrypt.hashSync(PASSWORD, 10);
+const passwordHash = 'otp_passwordless_account';
 
 const users = [
   { name: 'Jacqueline Delgado', email: 'actonitwithhelp@live.com' },
@@ -405,4 +403,4 @@ try {
 
 const taskCount = taskTemplates.reduce((total, projectTasks) => total + projectTasks.length, 0);
 console.log(`Seeded ${users.length} users, ${users.length * projectTemplates.length} projects, and ${users.length * taskCount} tasks.`);
-console.log(`Login with any seeded email and password: ${PASSWORD}`);
+console.log(`Login with any seeded email using the OTP flow (check server logs/console for code).`);
