@@ -7,6 +7,7 @@ import userRoutes from './routes/users.js';
 import projectRoutes from './routes/projects.js';
 import taskRoutes from './routes/tasks.js';
 import statsRoutes from './routes/stats.js';
+import chatRoutes from './routes/chat.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/users', userRoutes);      // Developer 1
 app.use('/api/projects', projectRoutes); // Developer 2
 app.use('/api/tasks', taskRoutes);      // Developer 3
 app.use('/api/stats', statsRoutes);     // Developer 4
+app.use('/api/chat', chatRoutes);
 
 // Central error fallback
 app.use((err, req, res, next) => {
