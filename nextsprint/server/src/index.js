@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
+import otpRoutes from './routes/otp.js';
 import userRoutes from './routes/users.js';
 import projectRoutes from './routes/projects.js';
 import taskRoutes from './routes/tasks.js';
@@ -21,6 +22,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => res.json({ ok: true, db: 'sqlite' }));
 
 app.use('/api/auth', authRoutes);       // Developer 1
+app.use('/api/auth/otp', otpRoutes);   // Developer 1 (Passwordless Auth)
 app.use('/api/users', userRoutes);      // Developer 1
 app.use('/api/projects', projectRoutes); // Developer 2
 app.use('/api/tasks', taskRoutes);      // Developer 3

@@ -33,13 +33,23 @@ export function AuthProvider({ children }) {
     setUser(data.user);
   }
 
+  async function sendOTP(email) {
+    await api('/api/auth/otp/send', { method: 'POST', body: { email } });
+  }
+
+  async function verifyOTP(email, code) {
+    const data = await api('/api/auth/otp/verify', { method: 'POST', body: { email, code } });
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+  }
+
   function logout() {
     localStorage.removeItem('token');
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, register, sendOTP, verifyOTP, logout }}>
       {children}
     </AuthContext.Provider>
   );

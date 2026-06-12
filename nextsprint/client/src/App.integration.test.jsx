@@ -50,10 +50,18 @@ describe('App frontend/backend integration', () => {
     mockFetch([
       {
         method: 'POST',
-        path: '/api/auth/register',
+        path: '/api/auth/otp/send',
         reply: ({ options }) => {
-          calls.push({ path: '/api/auth/register', body: JSON.parse(options.body) });
-          return jsonResponse({ token: 'new-token', user }, true, 201);
+          calls.push({ path: '/api/auth/otp/send', body: JSON.parse(options.body) });
+          return jsonResponse({ ok: true }, true, 200);
+        },
+      },
+      {
+        method: 'POST',
+        path: '/api/auth/otp/verify',
+        reply: ({ options }) => {
+          calls.push({ path: '/api/auth/otp/verify', body: JSON.parse(options.body) });
+          return jsonResponse({ token: 'new-token', user }, true, 200);
         },
       },
       {
@@ -89,20 +97,26 @@ describe('App frontend/backend integration', () => {
 
     renderApp('/register');
 
-    await userEvent.type(screen.getByPlaceholderText('Your name'), 'Test Student');
     await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'student@nextsprint.dev');
-    await userEvent.type(screen.getByPlaceholderText('At least 6 characters'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: /create account/i }));
+    await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
+
+    await waitFor(() => screen.getByPlaceholderText('123-456'));
+    await userEvent.type(screen.getByPlaceholderText('123-456'), '123-456');
 
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(localStorage.getItem('token')).toBe('new-token');
     expect(calls).toEqual([
       {
-        path: '/api/auth/register',
+        path: '/api/auth/otp/send',
         body: {
-          name: 'Test Student',
           email: 'student@nextsprint.dev',
-          password: 'password123',
+        },
+      },
+      {
+        path: '/api/auth/otp/verify',
+        body: {
+          email: 'student@nextsprint.dev',
+          code: '123-456',
         },
       },
       { path: '/api/stats', authorization: 'Bearer new-token' },

@@ -4,13 +4,16 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Login from '../pages/Login';
 
-// ─── Mocks ────────────────────────────────────────────────────────────────
-
-const mockLogin = vi.fn();
+// Mocks
+const mockSendOTP = vi.fn();
+const mockVerifyOTP = vi.fn();
 const mockNavigate = vi.fn();
 
 vi.mock('../context/AuthContext', () => ({
-  useAuth: () => ({ login: mockLogin }),
+  useAuth: () => ({
+    sendOTP: mockSendOTP,
+    verifyOTP: mockVerifyOTP,
+  }),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -18,104 +21,64 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-// ─── RED: define what the Login page must do ──────────────────────────────
-
-describe('Login page', () => {
+describe('Login page - OTP Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders email, password fields and submit button', () => {
+  it('renders email input and send code button in the first step', () => {
     render(<Login />, { wrapper: MemoryRouter });
 
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('••••••')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /send verification code/i })).toBeInTheDocument();
   });
 
-  it('has a link to the register page', () => {
-    render(<Login />, { wrapper: MemoryRouter });
-
-    const link = screen.getByRole('link', { name: /create an account/i });
-    expect(link).toHaveAttribute('href', '/register');
-  });
-
-  it('calls login() with the entered credentials on submit', async () => {
-    mockLogin.mockResolvedValue(undefined);
+  it('calls sendOTP and transitions to verification step upon submission', async () => {
+    mockSendOTP.mockResolvedValue(undefined);
     render(<Login />, { wrapper: MemoryRouter });
 
     await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'user@test.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'mypassword');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('user@test.com', 'mypassword');
+      expect(mockSendOTP).toHaveBeenCalledWith('user@test.com');
     });
+
+    // Check that we transitioned to the code entry step
+    expect(screen.getByPlaceholderText('123-456')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /verify code/i })).toBeInTheDocument();
   });
 
-  it('navigates to / after successful login', async () => {
-    mockLogin.mockResolvedValue(undefined);
+  it('calls verifyOTP when entering a valid 6-digit code', async () => {
+    mockSendOTP.mockResolvedValue(undefined);
+    mockVerifyOTP.mockResolvedValue(undefined);
     render(<Login />, { wrapper: MemoryRouter });
 
-    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'a@b.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'pass123');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    // Move to step 2
+    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'user@test.com');
+    await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
+    await waitFor(() => screen.getByPlaceholderText('123-456'));
+
+    // Enter code and submit
+    await userEvent.type(screen.getByPlaceholderText('123-456'), '147-546');
+    await userEvent.click(screen.getByRole('button', { name: /verify code/i }));
 
     await waitFor(() => {
+      expect(mockVerifyOTP).toHaveBeenCalledWith('user@test.com', '147-546');
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 
-  it('shows "Logging in…" while the request is in flight', async () => {
-    mockLogin.mockImplementation(() => new Promise(() => {})); // never resolves
+  it('displays the error message on failed OTP request or verification', async () => {
+    mockSendOTP.mockRejectedValue(new Error('Please enter a valid email address'));
     render(<Login />, { wrapper: MemoryRouter });
 
-    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'a@b.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'pass');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
-
-    expect(screen.getByText('Logging in…')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeDisabled();
-  });
-
-  it('displays the server error message on failed login', async () => {
-    mockLogin.mockRejectedValue(new Error('Invalid email or password'));
-    render(<Login />, { wrapper: MemoryRouter });
-
-    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'bad@test.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'wrongpass');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'invalid-email');
+    await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
-    });
-  });
-
-  it('clears the error message on a new submission attempt', async () => {
-    mockLogin.mockRejectedValueOnce(new Error('Invalid email or password'));
-    mockLogin.mockResolvedValueOnce(undefined);
-    render(<Login />, { wrapper: MemoryRouter });
-
-    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'a@b.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'bad');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
-    await waitFor(() => screen.getByText('Invalid email or password'));
-
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
-    await waitFor(() => {
-      expect(screen.queryByText('Invalid email or password')).not.toBeInTheDocument();
-    });
-  });
-
-  it('submits on Enter key in the password field', async () => {
-    mockLogin.mockResolvedValue(undefined);
-    render(<Login />, { wrapper: MemoryRouter });
-
-    await userEvent.type(screen.getByPlaceholderText('you@example.com'), 'a@b.com');
-    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'pass123{Enter}');
-
-    await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('a@b.com', 'pass123');
+      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
     });
   });
 });

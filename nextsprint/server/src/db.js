@@ -52,9 +52,18 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS login_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    code TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0
+  );
+
   CREATE INDEX IF NOT EXISTS idx_tasks_owner ON tasks(owner_id);
   CREATE INDEX IF NOT EXISTS idx_tasks_project ON tasks(project_id);
   CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
+<<<<<<< Updated upstream
 
   CREATE TABLE IF NOT EXISTS chat_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,6 +81,9 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_chat_messages_created ON chat_messages(created_at);
   CREATE INDEX IF NOT EXISTS idx_chat_mentions_message ON chat_mentions(message_id);
+=======
+  CREATE INDEX IF NOT EXISTS idx_login_codes_email ON login_codes(email);
+>>>>>>> Stashed changes
 `);
 
 export default db;
