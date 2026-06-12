@@ -55,6 +55,23 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_tasks_owner ON tasks(owner_id);
   CREATE INDEX IF NOT EXISTS idx_tasks_project ON tasks(project_id);
   CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
+
+  CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    body TEXT NOT NULL,
+    author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS chat_mentions (
+    message_id INTEGER NOT NULL REFERENCES chat_messages(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    username TEXT NOT NULL,
+    PRIMARY KEY (message_id, username)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_chat_messages_created ON chat_messages(created_at);
+  CREATE INDEX IF NOT EXISTS idx_chat_mentions_message ON chat_mentions(message_id);
 `);
 
 export default db;

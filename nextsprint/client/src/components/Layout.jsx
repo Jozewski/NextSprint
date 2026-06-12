@@ -1,6 +1,7 @@
 // App shell: sidebar + content area. Developer 4 owns the polish pass here.
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ChatSidebar from './ChatSidebar';
 
 const NAV = [
   { to: '/', label: 'Dashboard' },
@@ -40,6 +41,8 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        <ChatSidebar currentUser={user} />
 
         <div className="border-t border-slate-800 px-5 py-4">
           <p className="truncate text-sm font-medium text-white">{user?.name}</p>
