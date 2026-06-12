@@ -14,12 +14,12 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <aside className="flex w-56 flex-col bg-slate-900 text-slate-300">
+      <aside className="flex w-56 flex-col bg-indigo-700 text-indigo-100">
         <div className="px-5 py-6">
           <span className="text-lg font-bold text-white">
-            Next<span className="text-indigo-400">Sprint</span>
+            Next<span className="text-orange-400">Sprint</span>
           </span>
-          <p className="mt-1 text-xs text-slate-500">Sprint toward your next chapter</p>
+          <p className="mt-1 text-xs text-indigo-300">Sprint toward your <span className="text-orange-300 font-medium">Next Chapter</span></p>
         </div>
 
         <nav className="flex-1 space-y-1 px-3">
@@ -31,8 +31,8 @@ export default function Layout() {
               className={({ isActive }) =>
                 `block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-indigo-600 text-white'
-                    : 'hover:bg-slate-800 hover:text-white'
+                    ? 'bg-indigo-900 text-white'
+                    : 'hover:bg-indigo-600 hover:text-white'
                 }`
               }
             >
@@ -41,12 +41,12 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="border-t border-slate-800 px-5 py-4">
+        <div className="border-t border-indigo-600 px-5 py-4">
           <p className="truncate text-sm font-medium text-white">{user?.name}</p>
-          <p className="truncate text-xs text-slate-500">Module {user?.currentModule}</p>
+          <p className="truncate text-xs text-indigo-300">Module {user?.currentModule}</p>
           <button
             onClick={logout}
-            className="mt-3 text-xs font-medium text-slate-400 hover:text-white"
+            className="mt-3 text-xs font-medium text-indigo-300 hover:text-white"
           >
             Log out
           </button>

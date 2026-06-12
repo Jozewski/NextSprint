@@ -1,8 +1,9 @@
 // ===== Developer 3: Task create/edit modal =====
 import { useState } from 'react';
 
+// Original: focus:border-indigo-500 focus:ring-indigo-500
 const inputClass =
-  'mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500';
+  'mt-1 w-full rounded-md border border-orange-200 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-400';
 
 export default function TaskModal({ task, projects, onSave, onDelete, onClose }) {
   const [form, setForm] = useState({
@@ -118,7 +119,8 @@ export default function TaskModal({ task, projects, onSave, onDelete, onClose })
             <button onClick={onClose} className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">
               Cancel
             </button>
-            <button onClick={handleSave} className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            {/* Original: bg-indigo-600 hover:bg-indigo-700 */}
+            <button onClick={handleSave} className="rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 shadow-sm">
               {task?.id ? 'Save changes' : 'Create task'}
             </button>
           </div>

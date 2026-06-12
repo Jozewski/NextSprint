@@ -28,7 +28,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-xl">
         <h1 className="text-2xl font-bold text-slate-900">
-          Next<span className="text-indigo-600">Sprint</span>
+          Next<span className="text-orange-500">Sprint</span>
         </h1>
         <p className="mt-1 text-sm text-slate-500">Log in to your dashboard</p>
 
